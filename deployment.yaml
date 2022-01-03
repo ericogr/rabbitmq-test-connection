@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-test-connection
+  labels:
+    app: rabbitmq-test-connection
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: rabbitmq-test-connection
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-test-connection
+    spec:
+      containers:
+      - name: rabbitmq-test-connection
+        image: YOUR_IMAGE_REPOSITORY:latest
+        env:
+        - name: APP_URI
+          value: "amqp://USERNAME:PASSWORD@RABBITMQ_HOSTNAME:5672"
+        - name: APP_EXCHANGE
+          value: "test-exchange"
+        - name: APP_EXCHANGE_TYPE
+          value: "topic"
+        - name: APP_QUEUE
+          value: "test-queue"
+        - name: APP_KEY
+          value: "test-key"
+        - name: APP_CONSUMER_TAG
+          value: "simple-consumer"
+        - name: APP_LIFETIME
+          value: "0s"
+        command: ["/app"]
+        args: [
+          "--uri", "$(APP_URI)",
+          "--exchange", "$(APP_EXCHANGE)",
+          "--exchange-type", "$(APP_EXCHANGE_TYPE)",
+          "--queue", "$(APP_QUEUE)",
+          "--key", "$(APP_KEY)",
+          "--consumer-tag", "$(APP_CONSUMER_TAG)",
+          "--lifetime", "$(APP_LIFETIME)"]
